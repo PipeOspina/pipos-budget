@@ -9,6 +9,8 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  console.log(import.meta.env.VITE_EXAMPLE_KEY, import.meta.env.MODE);
+
   useEffect(() => {
     if (location.pathname === '/') navigate(homePath);
   }, [location, navigate]);

@@ -14,7 +14,11 @@
     "prettier": "npx prettier src --check",
     "prettier:fix": "npm run prettier -- --write",
     "format": "npm run prettier:fix && npm run lint:fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "env:dev": "dotenv -e .env.development cross-var",
+    "env:prod": "dotenv -e .env.production cross-var",
+    "deploy:dev": "npm run env:dev \"gcloud app deploy app.dev.yaml --project=%GCP_PROJECT_ID% --quiet\"",
+    "deploy": "npm run env:prod \"gcloud app deploy --project=%GCP_PROJECT_ID% --quiet\""
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
@@ -33,6 +37,8 @@
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "@vitejs/plugin-react": "^2.1.0",
+    "cross-var": "^1.1.0",
+    "dotenv-cli": "^6.0.0",
     "eslint": "^8.23.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
