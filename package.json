@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "gcp-build": "npm run build",
     "preview": "vite preview",
+    "start": "node server.js",
     "lint": "npx eslint src",
     "lint:fix": "npm run lint -- --fix",
     "prettier": "npx prettier src --check",
@@ -19,11 +21,13 @@
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
+    "express": "^4.18.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "6"
   },
   "devDependencies": {
+    "@types/node": "^18.7.15",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
@@ -41,5 +45,8 @@
     "typescript": "^4.6.4",
     "vite": "^3.1.0",
     "vite-tsconfig-paths": "^3.5.0"
+  },
+  "engines": {
+    "node": "^14.0.0"
   }
 }
