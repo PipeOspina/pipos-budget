@@ -1,4 +1,4 @@
-name: Deploy dev
+name: CD
 
 on:
   push:
@@ -6,32 +6,40 @@ on:
     - dev
 
 jobs:
-  setup-env:
-    name: Setup env
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
     environment: dev
     steps:
       - name: Checkout
         uses: actions/checkout@master
+
       - name: Setup Node
         uses: actions/setup-node@master
         with:
          node-version: 14
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-  lint:
-   name: Lint
-   runs-on: ubuntu-latest
-   environment: dev
-   steps:
-    - name: Checkout
-      uses: actions/checkout@master
-    - name: Setup Node
-      uses: actions/setup-node@master
-      with:
-        node-version: 14
-    - name: ESLint
-      run: yarn lint
-    - name: Prettier
-      run: yarn prettier
+      - name: ESLint
+        run: yarn lint
+
+      - name: Prettier
+        run: yarn prettier
+
+      - name: Build
+        run: yarn build
+
+      - name: Auth in GCP
+        uses: google-github-actions/auth@main
+        with:
+          workload_identity_provider: ${{ secrets.GPC_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - id: deploy
+        name: Deploy to GAP
+        uses: google-github-actions/deploy-appengine@main
+
+      - name: Browse to app
+        run: curl ${{ steps.deploy.outputs.url }}
