@@ -25,6 +25,8 @@ jobs:
    runs-on: ubuntu-latest
    environment: dev
    steps:
+    - name: Checkout
+      uses: actions/checkout@master
     - name: ESLint
       run: yarn lint
     - name: Prettier
