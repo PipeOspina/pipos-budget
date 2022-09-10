@@ -31,6 +31,9 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Try secrets
+        run: echo ${{ secrets.GPC_WORKLOAD_IDENTITY_PROVIDER }} && echo ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
       - name: Auth in GCP
         uses: google-github-actions/auth@main
         with:
