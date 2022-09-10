@@ -1,0 +1,31 @@
+name: Deploy dev
+
+on:
+  push:
+    branches:
+    - dev
+
+jobs:
+  setup-env:
+    name: Setup env
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Setup Node
+        uses: actions/setup-node@master
+        with:
+         node-version: 14
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+  lint:
+   name: Lint
+   runs-on: ubuntu-latest
+   environment: dev
+   steps:
+    - name: ESLint
+      run: yarn lint
+    - name: Prettier
+      run: yarn prettier
