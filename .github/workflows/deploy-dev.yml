@@ -10,6 +10,9 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: dev
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -31,11 +34,8 @@ jobs:
       - name: Build
         run: yarn build
 
-      - name: Try secrets
-        run: echo ${{ secrets.GPC_WORKLOAD_IDENTITY_PROVIDER }} && echo ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
       - name: Auth in GCP
-        uses: google-github-actions/auth@main
+        uses: google-github-actions/auth@v0
         with:
           workload_identity_provider: ${{ secrets.GPC_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
