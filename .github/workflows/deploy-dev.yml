@@ -42,7 +42,7 @@ jobs:
 
       - id: deploy
         name: Deploy to GAP
-        uses: google-github-actions/deploy-appengine@main
+        uses: google-github-actions/deploy-appengine@v0
 
       - name: Browse to app
         run: curl ${{ steps.deploy.outputs.url }}
