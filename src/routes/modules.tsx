@@ -6,6 +6,6 @@ export const modules: TModule[] = [
     icon: <MoneyOffIcon />,
     label: 'Deudas',
     path: 'debts',
-    element: 'Deudas funcionó!',
+    element: 'Deudas',
   },
 ];
