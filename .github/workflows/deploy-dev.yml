@@ -42,6 +42,6 @@ jobs:
       - id: deploy
         name: Deploy to GAP
         uses: google-github-actions/deploy-appengine@v0
-
-      - name: Browse to app
-        run: curl ${{ steps.deploy.outputs.url }}
+        with:
+          project_id: ${{ secrets.GAP_PROJECT_ID }}
+          deliverables: app.dev.yaml
