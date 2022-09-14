@@ -1,5 +1,9 @@
 runtime: nodejs14
 
+env_variables:
+  NODE_ENV: development
+  VITE_EXAMPLE_KEY: $VITE_EXAMPLE_KEY
+
 handlers:
 - url: /.*
   secure: always

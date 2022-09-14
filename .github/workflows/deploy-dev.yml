@@ -32,7 +32,14 @@ jobs:
         run: yarn prettier
 
       - name: Build
-        run: yarn build
+        run: yarn build:dev
+        
+      - name: Copy secrets to GAE config yaml
+        uses: 73h/gae-app-yaml-replace-env-variables@v0.1
+        env:
+          VITE_EXAMPLE_KEY: ${{ secrets.VITE_EXAMPLE_KEY }}
+        with:
+          app_yaml_path: app.dev.yaml
 
       - name: Auth in GCP
         uses: google-github-actions/auth@v0
@@ -40,8 +47,8 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - id: deploy
-        name: Deploy to GAP
+        name: Deploy to GAE
         uses: google-github-actions/deploy-appengine@v0
         with:
-          project_id: ${{ secrets.GAP_PROJECT_ID }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
           deliverables: app.dev.yaml

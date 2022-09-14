@@ -2,5 +2,5 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 npm run format
-npm run build
+if test "$(git rev-parse --abbrev-ref HEAD)" = "main" ; then npm run build ; else npm run build:dev ; fi
 git add tsconfig.tsbuildinfo

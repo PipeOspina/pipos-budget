@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
+    "build:dev": "tsc && vite build -m development",
     "build": "tsc && vite build",
-    "gcp-build": "npm run build",
+    "gcp-build": "if test \"$NODE_ENV\" = \"production\" ; then npm run build ; else npm run build:dev ; fi ",
     "preview": "vite preview",
     "start": "node server.js",
     "lint": "npx eslint src",
