@@ -2,7 +2,6 @@ runtime: nodejs14
 
 env_variables:
   NODE_ENV: production
-  VITE_EXAMPLE_KEY: $VITE_EXAMPLE_KEY
 
 handlers:
 - url: /.*

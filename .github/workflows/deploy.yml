@@ -30,14 +30,15 @@ jobs:
 
       - name: Prettier
         run: yarn prettier
+        
+      - name: Make dotenv file
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          file_name: .env.production
+          envkey_VITE_EXAMPLE_KEY: ${{ secrets.VITE_EXAMPLE_KEY }}
 
       - name: Build
         run: yarn build
-        
-      - name: Copy secrets to GAE config yaml
-        uses: 73h/gae-app-yaml-replace-env-variables@v0.1
-        env:
-          VITE_EXAMPLE_KEY: ${{ secrets.VITE_EXAMPLE_KEY }}
 
       - name: Auth in GCP
         uses: google-github-actions/auth@v0
