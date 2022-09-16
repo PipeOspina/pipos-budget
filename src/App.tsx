@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
 import { Layout } from '~/components';
 import { homePath, modules, routes } from '~/routes';
+import { debts } from './cloud';
 
 function App() {
   const Outlet = useRoutes(routes);
@@ -14,6 +15,13 @@ function App() {
   useEffect(() => {
     if (location.pathname === '/') navigate(homePath);
   }, [location, navigate]);
+
+  useEffect(() => {
+    debts
+      .getDebts()
+      .then(({ docs }) => console.log(docs))
+      .catch(console.warn);
+  }, []);
 
   return (
     <>
