@@ -9,14 +9,36 @@ import {
   FirestoreError,
   getFirestore,
   QuerySnapshot,
+  Timestamp,
   Unsubscribe,
 } from 'firebase/firestore';
 import { app } from '../firebase';
 
 export const db = getFirestore(app);
 
-export const getCollectionReference = <DocumentDataType = DocumentData>(name: string) => {
-  return collection(db, name) as CollectionReference<DocumentDataType>;
+export type CommonData = DocumentData & {
+  creationDate: Timestamp;
+  editionDate: Timestamp;
+};
+
+export enum HistoryDocumentType {
+  CREATE = 'HISTORY_DOCUMENT_TYPE_CREATE',
+  UPDATE = 'HISTORY_DOCUMENT_TYPE_UPDATE',
+  DELETE = 'HISTORY_DOCUMENT_TYPE_DELETE',
+}
+
+export type HistoryDocument<DocumentDataType = DocumentData> = {
+  before: Partial<DocumentDataType>;
+  after: Partial<DocumentDataType>;
+  date: Timestamp;
+  type: HistoryDocumentType;
+};
+
+export const getCollectionReference = <DocumentDataType = DocumentData>(
+  name: string,
+  ...path: string[]
+) => {
+  return collection(db, name, ...path) as CollectionReference<DocumentDataType>;
 };
 
 export const getDocReference = <DocumentDataType = DocumentData>(
@@ -25,6 +47,11 @@ export const getDocReference = <DocumentDataType = DocumentData>(
 ) => {
   return doc(db, collectionName, ...path) as DocumentReference<DocumentDataType>;
 };
+
+export const getDocHistoryReference = <DocumentDataType = DocumentData>(
+  collectionName: string,
+  docId: string,
+) => getCollectionReference<HistoryDocument<DocumentDataType>>(collectionName, docId, 'history');
 
 export type CollectionObserver<DataType = any> = {
   next: (doc: QuerySnapshot<DataType>) => void;
@@ -40,14 +67,18 @@ export type DocObserver<DataType = any> = {
 
 export type OnCollectionChange<DataType = any> = (
   observer: CollectionObserver<DataType>,
+  ...docIds: string[]
 ) => Unsubscribe;
 
 export type OnDocChange<DataType = any> = (
-  id: string,
   observer: DocObserver<DataType>,
+  ...docIds: string[]
 ) => Unsubscribe;
 
-export type UpdateDoc<DataType = any> = (id: string, doc: UpdatableDoc<DataType>) => Promise<void>;
+export type UpdateDoc<DataType = any> = (
+  doc: UpdatableDoc<DataType>,
+  ...docIds: string[]
+) => Promise<DocumentReference<HistoryDocument<UpdatableDoc<DataType>>>>;
 
 export type UpdatableDoc<DataType = any> = {
   [Key in keyof DataType]?: DataType[Key] | FieldValue;
