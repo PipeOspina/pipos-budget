@@ -1,25 +1,6 @@
-import {
-  addDoc,
-  deleteDoc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  query,
-  Timestamp,
-  updateDoc,
-  where,
-} from 'firebase/firestore';
-import {
-  CommonData,
-  getCollectionReference,
-  getDocHistoryReference,
-  getDocReference,
-  HistoryDocumentType,
-  OnCollectionChange,
-  OnDocChange,
-  UpdateDoc,
-} from '../../config';
-import { UpdatableDoc } from './../../config';
+import { Timestamp } from 'firebase/firestore';
+import { CommonData } from '../../common';
+import { generateCRUD, generateReferences } from './../../common';
 
 export enum DebtType {
   CREDIT_CARD = 'DEBT_TYPE_CREDIT_CARD',
@@ -89,74 +70,24 @@ export interface Debt {
 
 export type DebtData = CommonData & Debt;
 
-export const debtCollection = getCollectionReference<DebtData>('debts');
-export const debtDoc = (id: string) => getDocReference<DebtData>('debts', id);
-export const debtHistory = (id: string) => getDocHistoryReference<Debt>('debts', id);
+export const { debtDoc, debtHistory, debtsCollection, debtHistoryDoc } = generateReferences<
+  Debt,
+  'debt'
+>('debt');
 
-const activeWhereStatement = where('active', '==', true);
-const activeDebtsCollection = query(debtCollection, activeWhereStatement);
-
-export const getDebts = () => getDocs(activeDebtsCollection);
-export const onChangeDebts: OnCollectionChange<DebtData> = (observer) =>
-  onSnapshot(activeDebtsCollection, observer);
-
-export const getDebt = (id: string) => getDoc(debtDoc(id));
-export const onChangeDebt: OnDocChange<DebtData> = (observer, id) =>
-  onSnapshot(debtDoc(id), observer);
-
-export const addDebt = async (debt: Debt) => {
-  const now = new Date();
-  const date = Timestamp.fromDate(now);
-
-  const newDebtRef = await addDoc(debtCollection, {
-    ...debt,
-    creationDate: date,
-    editionDate: date,
-  });
-
-  addDoc(debtHistory(newDebtRef.id), {
-    after: debt,
-    before: {},
-    date: date,
-    type: HistoryDocumentType.CREATE,
-  });
-
-  return newDebtRef;
-};
-
-export const updateDebt: UpdateDoc<Debt> = async (debt, id) => {
-  const now = new Date();
-  const date = Timestamp.fromDate(now);
-
-  updateDoc(debtDoc(id), {
-    ...debt,
-    editionDate: date,
-  });
-
-  const lastDebt: Partial<DebtData> = (await getDebt(id)).data() ?? {};
-  const debtBeforeEdition: UpdatableDoc<DebtData> = {};
-
-  for (const key in debt) {
-    debtBeforeEdition[key] = lastDebt[key];
-  }
-
-  return addDoc(debtHistory(id), {
-    after: debt,
-    before: debtBeforeEdition,
-    date,
-    type: HistoryDocumentType.UPDATE,
-  });
-};
-
-export const deleteDebt = async (id: string) => {
-  const { creationDate: _, editionDate: __, ...debtData } = (await getDebt(id)).data() ?? {};
-
-  addDoc(debtHistory(id), {
-    after: {},
-    before: debtData,
-    date: Timestamp.fromDate(new Date()),
-    type: HistoryDocumentType.DELETE,
-  });
-
-  return deleteDoc(debtDoc(id));
-};
+export const {
+  addDebt,
+  deleteDebt,
+  getDebt,
+  getDebtHistory,
+  getDebtHistoryDoc,
+  getDebts,
+  onChangeDebt,
+  onChangeDebtHistory,
+  onChangeDebtHistoryDoc,
+  onChangeDebts,
+  updateDebt,
+} = generateCRUD<Debt, 'debt'>(
+  { collection: debtsCollection, doc: debtDoc, history: debtHistory, historyDoc: debtHistoryDoc },
+  'debt',
+);
